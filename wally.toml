@@ -1,0 +1,27 @@
+[package]
+name = "dnurk/suitupinterviewgame"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[place]
+shared-packages = "game.ReplicatedStorage.Packages"
+
+[dependencies]
+React = "jsdotlua/react@17.0.2"
+ReactRoblox = "jsdotlua/react-roblox@17.0.2"
+Promise = "evaera/promise@4.0.0"
+Signal = "sleitnick/signal@1.5.0"
+Trove = "sleitnick/trove@0.5.0"
+Sift = "csqrl/sift@0.0.6"
+Comm = "sleitnick/comm@0.3.1"
+Input = "sleitnick/input@2.1.1"
+WaitFor = "sleitnick/wait-for@0.2.2"
+Observers = "sleitnick/observers@^0.3.3"
+Shake = "sleitnick/shake@0.1.7"
+Flipper = "reselim/flipper@2.0.0"
+t = "osyrisrblx/t@3.0.0"
+
+[server-dependencies]
+Cmdr = "evaera/cmdr@1.11.0"
+Lapis = "davidnurkkala/lapis@0.2.7"
