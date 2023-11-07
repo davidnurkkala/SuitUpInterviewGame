@@ -1,0 +1,39 @@
+{
+	"service": {
+		"prefix": "service",
+		"body": [
+			"local $TM_FILENAME_BASE = {",
+			"\tPriority = 0,",
+			"}",
+			"",
+			"type $TM_FILENAME_BASE = typeof($TM_FILENAME_BASE)",
+			"",
+			"function $TM_FILENAME_BASE:PrepareBlocking() end",
+			"",
+			"function $TM_FILENAME_BASE:Start() end",
+			"",
+			"return $TM_FILENAME_BASE",
+			""
+		]
+	},
+	"class": {
+		"prefix": "class",
+		"body": [
+			"local $TM_FILENAME_BASE = {}",
+			"$TM_FILENAME_BASE.__index = $TM_FILENAME_BASE",
+			"",
+			"function $TM_FILENAME_BASE.new()",
+			"\tlocal self = setmetatable({",
+			"",
+			"\t}, $TM_FILENAME_BASE)",
+			"",
+			"\treturn self",
+			"end",
+			"",
+			"function $TM_FILENAME_BASE:Destroy() end",
+			"",
+			"return $TM_FILENAME_BASE",
+			""
+		]
+	}
+}

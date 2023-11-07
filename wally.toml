@@ -21,7 +21,7 @@ Observers = "sleitnick/observers@^0.3.3"
 Shake = "sleitnick/shake@0.1.7"
 Flipper = "reselim/flipper@2.0.0"
 t = "osyrisrblx/t@3.0.0"
+Cmdr = "evaera/cmdr@1.11.0"
 
 [server-dependencies]
-Cmdr = "evaera/cmdr@1.11.0"
 Lapis = "davidnurkkala/lapis@0.2.7"
