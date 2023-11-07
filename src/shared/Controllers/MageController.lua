@@ -17,6 +17,8 @@ type MageController = typeof(MageController)
 
 function MageController:PrepareBlocking()
 	Observers.observeTag("Mage", function(char: Model)
+		if char ~= Players.LocalPlayer.Character then return end
+
 		local trove = Trove.new()
 
 		trove

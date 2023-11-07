@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Comm = require(ReplicatedStorage.Packages.Comm)
@@ -15,6 +16,8 @@ return function()
 
 	React.useEffect(function()
 		return Observers.observeTag("Mage", function(char: Model)
+			if char ~= Players.LocalPlayer.Character then return end
+
 			local trove = Trove.new()
 
 			trove
