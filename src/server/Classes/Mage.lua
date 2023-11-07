@@ -11,6 +11,7 @@ local MageProjectile = require(ServerScriptService.Server.Classes.MageProjectile
 local MageReflector = require(ServerScriptService.Server.Classes.MageReflector)
 local Promise = require(ReplicatedStorage.Packages.Promise)
 local ResourceNumber = require(ReplicatedStorage.Shared.Classes.ResourceNumber)
+local Signal = require(ReplicatedStorage.Packages.Signal)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 local t = require(ReplicatedStorage.Packages.t)
 
@@ -39,6 +40,7 @@ function Mage.new(args: {
 		AttackCooldown = Cooldown.new(1),
 		ReflectCooldown = Cooldown.new(1),
 		Trove = Trove.new(),
+		Destroyed = Signal.new(),
 	}, Mage)
 
 	-- set up comm
@@ -58,8 +60,12 @@ function Mage.new(args: {
 		self:Attack(targetPosition)
 	end)
 
-	self.Comm:CreateSignal("Reflect"):Connect(function(player)
+	self.Comm:CreateSignal("Reflect"):Connect(function(player, reflectPosition)
 		if player ~= self.Player then return end
+		if not t.Vector3(reflectPosition) then return end
+
+		local distance = (reflectPosition - self.Root.Position).Magnitude
+		if distance > 8 then return end
 
 		self:Reflect()
 	end)
@@ -67,6 +73,11 @@ function Mage.new(args: {
 	-- set up updater
 	self.Trove:Connect(RunService.Heartbeat, function(dt)
 		self:Update(dt)
+	end)
+
+	-- die when dead
+	self.Human.Died:Connect(function()
+		self:Destroy()
 	end)
 
 	-- add tag now that everything's good to go
@@ -116,6 +127,7 @@ function Mage:Attack(position: Vector3)
 		local direction = (position - here).Unit
 		local velocity = direction * ProjectileSpeed
 		MageProjectile.new(self.Player, here, velocity)
+		EffectService:All("Sound", { Name = "Cast", Target = self.Root })
 	end)
 end
 
@@ -129,7 +141,8 @@ function Mage:Reflect()
 
 	self.Animator:Play("Reflect", 0)
 
-	MageReflector.new(self.Root.Position)
+	MageReflector.new(self.Player, self.Root.Position)
+	EffectService:All("Sound", { Name = "Reflect", Target = self.Root })
 end
 
 function Mage:Update(dt: number)
@@ -138,6 +151,7 @@ end
 
 function Mage:Destroy()
 	self.Trove:Clean()
+	self.Destroyed:Fire()
 end
 
 return Mage

@@ -8,9 +8,10 @@ local CollisionGroupService = {
 }
 
 local CollisionsByGroup = {
-	Level = { "Player" },
+	Level = { "Player", "Debris" },
 	Enemy = { "Player" },
 	Player = { "Level", "Enemy" },
+	Debris = { "Level", "Debris" },
 }
 
 type CollisionGroupService = typeof(CollisionGroupService)

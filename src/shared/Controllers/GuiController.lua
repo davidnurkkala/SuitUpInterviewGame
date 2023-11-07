@@ -13,6 +13,9 @@ type GuiController = typeof(GuiController)
 
 function GuiController:Start()
 	local gui = Instance.new("ScreenGui")
+	gui.ResetOnSpawn = false
+	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	gui.IgnoreGuiInset = true
 	gui.Name = "GameGui"
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 

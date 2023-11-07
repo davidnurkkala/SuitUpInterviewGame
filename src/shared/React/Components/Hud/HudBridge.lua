@@ -8,6 +8,8 @@ local React = require(ReplicatedStorage.Packages.React)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
 return function()
+	local score, setScore = React.useState(0)
+	local highScore, setHighScore = React.useState(0)
 	local manaMax, setManaMax = React.useState(1)
 	local mana, setMana = React.useState(0)
 
@@ -30,7 +32,20 @@ return function()
 		end, { workspace })
 	end, {})
 
+	React.useEffect(function()
+		local trove = Trove.new()
+
+		trove:Add(Observers.observeAttribute(workspace, "Score", setScore))
+		trove:Add(Observers.observeAttribute(workspace, "HighScore", setHighScore))
+
+		return function()
+			trove:Clean()
+		end
+	end, {})
+
 	return React.createElement(Hud, {
 		ManaPercent = mana / manaMax,
+		Score = score,
+		HighScore = highScore,
 	})
 end

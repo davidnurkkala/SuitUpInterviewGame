@@ -1,4 +1,5 @@
 local ContextActionService = game:GetService("ContextActionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Comm = require(ReplicatedStorage.Packages.Comm)
@@ -6,6 +7,7 @@ local MouseUtil = require(ReplicatedStorage.Shared.Util.MouseUtil)
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Promise = require(ReplicatedStorage.Packages.Promise)
 local Trove = require(ReplicatedStorage.Packages.Trove)
+local TryNow = require(ReplicatedStorage.Shared.Util.TryNow)
 
 local MageController = {
 	Priority = 0,
@@ -36,7 +38,9 @@ function MageController:PrepareBlocking()
 				ContextActionService:BindAction("Reflect", function(_, state)
 					if state ~= Enum.UserInputState.Begin then return Enum.ContextActionResult.Pass end
 
-					reflect:Fire()
+					reflect:Fire(TryNow(function()
+						return Players.LocalPlayer.Character.PrimaryPart.Position
+					end, Vector3.new()))
 
 					return Enum.ContextActionResult.Sink
 				end, false, Enum.KeyCode.E)

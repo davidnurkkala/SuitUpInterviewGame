@@ -1,5 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 
+local EffectService = require(ServerScriptService.Server.Services.EffectService)
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Promise = require(ReplicatedStorage.Packages.Promise)
 local Trove = require(ReplicatedStorage.Packages.Trove)
@@ -10,7 +12,6 @@ MageProjectile.__index = MageProjectile
 function MageProjectile.new(player: Player, position: Vector3, velocity: Vector3)
 	local self = setmetatable({
 		Trove = Trove.new(),
-		State = "Direct",
 	}, MageProjectile)
 
 	local model = Instance.new("Model")
@@ -19,22 +20,42 @@ function MageProjectile.new(player: Player, position: Vector3, velocity: Vector3
 	self.Model = model
 
 	local root = Instance.new("Part")
-	root.Color = Color3.new(1, 0, 0)
 	root.Size = Vector3.one * 0.75
 	root.Shape = Enum.PartType.Ball
 	root.Material = Enum.Material.Neon
 	root.Position = position
 	root.CollisionGroup = "Player"
 	root.CustomPhysicalProperties = PhysicalProperties.new(1, 0, 1, 100, 100)
+	root:AddTag("MageProjectile")
+
+	root.Destroying:Connect(function()
+		self:Destroy()
+	end)
 
 	root.Touched:Connect(function(part)
-		if part.CollisionGroup == "Level" and self.State == "Direct" then
-			self.State = "Ricochet"
+		if part.CollisionGroup == "Player" then
+			if part:HasTag("MageReflector") and root:GetAttribute("State") == "Ricochet" then
+				local direction = (root.Position - part.Position).Unit
+				MageProjectile.new(player, root.Position, direction * root.AssemblyLinearVelocity.Magnitude):SetState("Reflect")
+				EffectService:All("Sound", { Name = "Bounce", Target = root.Position })
+
+				self:Destroy()
+			end
+			return
+		end
+
+		if part.CollisionGroup == "Enemy" then return end
+
+		EffectService:All("Sound", { Name = "Bounce", Target = root.Position })
+
+		if root:GetAttribute("State") == "Direct" then
+			root:SetAttribute("State", "Ricochet")
 			root.Color = Color3.new(0, 1, 0)
-		elseif part.CollisionGroup == "Enemy" then
-			print("HIT AN ENEMY")
 		end
 	end)
+
+	self.Root = root
+	self:SetState("Direct")
 
 	root.Parent = model
 	model.PrimaryPart = root
@@ -87,6 +108,17 @@ function MageProjectile.new(player: Player, position: Vector3, velocity: Vector3
 	end)
 
 	return self
+end
+
+function MageProjectile:SetState(state: "Direct" | "Ricochet" | "Reflect")
+	self.Root:SetAttribute("State", state)
+	if state == "Direct" then
+		self.Root.Color = Color3.new(1, 0, 0)
+	elseif state == "Ricochet" then
+		self.Root.Color = Color3.new(0, 1, 0)
+	else
+		self.Root.Color = Color3.new(0, 0, 1)
+	end
 end
 
 function MageProjectile:Destroy()
